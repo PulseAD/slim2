@@ -15,10 +15,38 @@ class IndexTest extends TestCase
     ));
   }
 
-  private function retrieveGetRequestAnswer($url) {
-    $client = new Client([
+  private function retrieveClient () {
+    return new Client([
       'base_uri' => 'http://slim2.test'
     ]);
+  }
+
+  private function retrievePostRequestAnswer($url, $body) {
+    $client = $this->retrieveClient();
+    $resolve = $this->getCurlOptions();
+    $response = $client->request('POST', $url, [
+      'curl' => [
+        CURLOPT_RESOLVE =>  $resolve
+      ],
+      'body' => json_encode($body)
+    ]);
+    return $response;
+  }
+
+  private function retrieveFormDataPostRequestAnswer($url, $body) {
+    $client = $this->retrieveClient();
+    $resolve = $this->getCurlOptions();
+    $response = $client->request('POST', $url, [
+      'curl' => [
+        CURLOPT_RESOLVE =>  $resolve
+      ],
+      'form_params' => $body
+    ]);
+    return $response;
+  }
+
+  private function retrieveGetRequestAnswer($url) {
+    $client = $this->retrieveClient();
     $resolve = $this->getCurlOptions();
     $response = $client->request('GET', $url, [
       'curl' => [
@@ -26,10 +54,6 @@ class IndexTest extends TestCase
       ]
     ]);
     return $response;
-  }
-  public function testFirst()
-  {
-    $this->assertEquals(1, 1);
   }
 
   public function testCallHttp() {
@@ -45,5 +69,21 @@ class IndexTest extends TestCase
     $isNumberInRange = $bodyAsArray['number'] > 0 && $bodyAsArray['number'] < 11;
     $this->assertTrue($isNumberInRange);
     $this->assertEquals(201, $response->getStatusCode());
+  }
+
+  public function testShouldReadBodyPost() {
+    $response = $this->retrievePostRequestAnswer('/post-with-json', [
+      'name' => 'Antoine'
+    ]);
+    $bodyAsArray = json_decode($response->getBody(), true);
+    $this->assertEquals('Hello Antoine', $bodyAsArray['message']);
+  }
+
+  public function testShouldReadFormDataPost() {
+    $response = $this->retrieveFormDataPostRequestAnswer('/post-with-form-data', [
+      'name' => 'Antoine'
+    ]);
+    $bodyAsArray = json_decode($response->getBody(), true);
+    $this->assertEquals('Hi Antoine', $bodyAsArray['message']);
   }
 }

@@ -20,6 +20,21 @@ $app->get('/hello/:name', function ($name) {
   echo "Hi, $name";
 });
 
+$app->post('/post-with-form-data', function () use($app) {
+  $name = $app->request->params('name', 'No one');
+  $app->response->body(json_encode([
+    'message' => "Hi $name"
+  ]));
+});
+
+$app->post('/post-with-json', function () use($app) {
+  $body = $app->request->getBody();
+  $name = json_decode($body, true)['name'];
+  $app->response->body(json_encode([
+    'message' => "Hello $name"
+  ]));
+});
+
 $app->get('/random', function () use($app) {
   $statusCodeUpdater = new StatusCodeUpdater();
   $app = $statusCodeUpdater->updateWithCode201($app);
