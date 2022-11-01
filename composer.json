@@ -1,0 +1,27 @@
+{
+    "name": "antoine/slim2",
+    "authors": [
+        {
+            "name": "Antoine",
+            "email": "pulsead94@gmail.com"
+        }
+    ],
+    "autoload-old": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "Api\\": "src/"
+        }
+    },
+    "require": {
+        "php": "7.4.*",
+        "slim/slim": "2.*",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    }
+}
